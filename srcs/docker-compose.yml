@@ -1,0 +1,66 @@
+services:
+  mariadb:
+    container_name: mariadb
+    build: ./requirements/mariadb/
+    secrets:
+      - db_root_password
+      - db_password
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    restart: unless-stopped
+    networks: 
+      - inception
+    environment:
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      MYSQL_NAME: ${MYSQL_NAME:-"wordpress"}
+      MYSQL_USER: ${MYSQL_USER:-"mysql"}
+
+  wordpress:
+    container_name: wordpress
+    build: 
+      context: ./requirements/wordpress/
+    secrets:
+      - db_password
+    volumes:
+      - wordpress-data:/var/www/html
+    networks: 
+      - inception
+    environment:
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_NAME: ${MYSQL_NAME:-wordpress}
+      WORDPRESS_DB_USER: ${MYSQL_USER:-mysql}
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx/
+    secrets: 
+      - credentials
+    restart: unless-stopped
+
+secrets:
+  db_password:
+    file: ../secrets/db_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  credentials:
+    file: ../secrets/credentials.txt
+
+volumes:
+  mariadb-data:
+    driver: local
+    driver_opts: 
+      type: none
+      o: bind
+      device: /home/amalangu/data/mariadb
+  wordpress-data:
+    driver: local
+    driver_opts: 
+      type: none
+      o: bind
+      device: /home/amalangu/data/wordpress
+
+networks:
+  inception:
