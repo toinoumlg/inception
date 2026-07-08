@@ -17,8 +17,8 @@ build:
 clear:
 	cd $(SOURCE) && $(DOWN)
 	sudo rm -rf /home/amalangu/data
-	docker volume rm srcs_mariadb-data
-	docker volume rm srcs_wordpress-data
+	docker volume rm inception_mariadb-data
+	docker volume rm inception_wordpress-data
 
 re: clear build up
 

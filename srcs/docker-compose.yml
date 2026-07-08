@@ -1,52 +1,83 @@
 services:
   mariadb:
     container_name: mariadb
-    build: ./requirements/mariadb/
+    build: requirements/mariadb/
     secrets:
       - db_root_password
       - db_password
     volumes:
-      - mariadb-data:/var/lib/mysql
+      - mariadb-data:/var/lib/mariadb
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     networks: 
       - inception
     environment:
-      MYSQL_PORT: ${MYSQL_PORT:-3306}
-      MYSQL_NAME: ${MYSQL_NAME:-"wordpress"}
-      MYSQL_USER: ${MYSQL_USER:-"mysql"}
+      PORT: ${MYSQL_PORT}
+      DB_NAME: ${MYSQL_NAME}
+      LOGIN: ${LOGIN}
 
   wordpress:
     container_name: wordpress
-    build: 
-      context: ./requirements/wordpress/
+    build: requirements/wordpress/
     secrets:
       - db_password
+      - wp_admin
+      - wp_login
     volumes:
-      - wordpress-data:/var/www/html
+      - wordpress-data:/var/www/wordpress
     networks: 
       - inception
     environment:
-      WORDPRESS_DB_HOST: mariadb
-      WORDPRESS_DB_NAME: ${MYSQL_NAME:-wordpress}
-      WORDPRESS_DB_USER: ${MYSQL_USER:-mysql}
+      DB_HOST: mariadb
+      DB_NAME: ${MYSQL_NAME}
+      DB_PORT: ${MYSQL_PORT}
+      ADMIN_NAME: ${WP_ADMIN}
+      ADMIN_MAIL: ${WP_ADMIN_MAIL}
+      LOGIN: ${LOGIN}
+      LOGIN_MAIL: ${WP_USER_MAIL}
+      DOMAIN_NAME: ${DOMAIN_NAME}
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "pgrep", "-x", "php-fpm85"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
     restart: unless-stopped
 
   nginx:
     container_name: nginx
-    build: ./requirements/nginx/
-    secrets: 
-      - credentials
+    build: requirements/nginx/
+    volumes:
+      - wordpress-data:/var/www/wordpress
+    networks: 
+      - inception
+    environment:
+      DOMAIN_NAME: ${DOMAIN_NAME}
+      NGINX_PORT: ${NGINX_PORT}
+      WP_PORT: ${WP_PORT}
+    ports:
+      - ${NGINX_PORT}:${NGINX_PORT}
+    depends_on:
+      wordpress:
+        condition: service_healthy
     restart: unless-stopped
+
 
 secrets:
   db_password:
-    file: ../secrets/db_password.txt
+    file: ${DB_PWD}
   db_root_password:
-    file: ../secrets/db_root_password.txt
-  credentials:
-    file: ../secrets/credentials.txt
+    file: ${DB_ROOT_PWD}
+  wp_admin:
+    file: ${WP_ADMIN}
+  wp_login:
+    file: ${WP_LOGIN}
 
 volumes:
   mariadb-data:
@@ -64,3 +95,4 @@ volumes:
 
 networks:
   inception:
+    driver: bridge

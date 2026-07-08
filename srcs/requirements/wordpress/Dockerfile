@@ -1,29 +1,27 @@
 FROM alpine:3.24
 
-RUN apk add \
+RUN apk update && apk add \
 	php \
+	php-phar \
 	php-fpm \
 	php-mysqli \
-    php-json \
-    php-mbstring \
-    php-zip \
-    php-gd \
-    php-curl 
+	php-mbstring \
+	wget
 
-RUN mkdir -p /var/www/html && \
-    mkdir -p /var/run/php
+RUN mkdir -p /var/www && adduser -D -g www www
 
-RUN wget https://wordpress.org/latest.tar.gz && \
-	tar -xzvf latest.tar.gz -C /var/www/html && \
-	rm latest.tar.gz && 
-	chown -R www:www /var/www/html
+RUN wget https://wordpress.org/wordpress-7.0.tar.gz && \
+	tar -xzvf wordpress-7.0.tar.gz -C /var/www && \
+	rm wordpress-7.0.tar.gz && \
+	chown -R www:www /var/www/
 
-COPY conf/www.conf /etc/php83/php-fpm.d/www.conf
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+	chmod +x wp-cli.phar && mv wp-cli.phar /usr/bin/wp
 
-COPY conf/wp-config.php /var/www/html
+COPY conf/www.conf /etc/php85/php-fpm.d/www.conf
 
-EXPOSE 9000
+COPY --chmod=+x tools/entrypoint.sh /entrypoint.sh
 
-VOLUME ["/var/www/html"]
+WORKDIR /var/www/wordpress
 
-ENTRYPOINT ["sh", "-c", "php-fpm83 -F"]
+ENTRYPOINT ["/entrypoint.sh"]
