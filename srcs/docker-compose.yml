@@ -13,6 +13,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+      start_period: 2s
     networks: 
       - inception
     environment:
@@ -48,6 +49,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+      start_period: 2s
     restart: unless-stopped
 
   nginx:
