@@ -1,11 +1,11 @@
 SOURCE=srcs
 
-DATA:=/home/amalangu/data
 UP:= docker compose up -d
 BUILD:= docker compose build
 DOWN:= docker compose down
 
 up:
+	mkdir -p /home/amalangu/data/wordpress && mkdir -p /home/amalangu/data/mariadb
 	cd $(SOURCE) && $(UP)
 
 down:

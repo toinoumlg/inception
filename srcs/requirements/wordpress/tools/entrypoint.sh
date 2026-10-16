@@ -1,8 +1,5 @@
 #!/bin/sh
 
-set -eou pipefail
-
-
 if [ ! -f wp-config.php ]; then
 	DB_PWD_FILE=/run/secrets/db_password
 	ADMIN_PWD_FILE=/run/secrets/wp_admin

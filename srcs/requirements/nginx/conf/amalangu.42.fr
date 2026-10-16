@@ -1,6 +1,5 @@
 server {
 	listen NGINX_PORT ssl;
-    listen [::]:NGINX_PORT ssl;
 	server_name DOMAIN DOMAIN;
 
 	ssl_certificate /etc/ssl/.crt;
