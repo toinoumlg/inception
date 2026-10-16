@@ -35,5 +35,4 @@ EOF
 
 fi
 
-# exec mariadbd, becomes PID 1 so our container status is related to this process
 exec mariadbd --skip-networking=0
