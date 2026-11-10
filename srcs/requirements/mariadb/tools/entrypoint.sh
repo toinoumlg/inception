@@ -6,8 +6,8 @@ sed -i "s|socket=.*|socket=$DATADIR/$DB_NAME/$DB_NAME.sock|g" $CONF
 
 # if first time running, datadir/mysql/ doesnt exist
 if [ ! -d "$DATADIR/mysql" ]; then
-	ROOT_FILE=/run/secrets/db_root_password
-	USER_FILE=/run/secrets/db_password
+	ROOT_FILE=/run/secrets/db_root_pwd
+	USER_FILE=/run/secrets/db_user_pwd
 
 	if [ ! -f "$ROOT_FILE" ] || [ ! -f "$USER_FILE" ]; then
 		echo "Secrets not provided"
@@ -15,7 +15,7 @@ if [ ! -d "$DATADIR/mysql" ]; then
 	fi
 
 	# creates required folders and set permissions
-	mkdir -p "$DATADIR"
+	mkdir -p "$DATADIR/$DB_NAME"
 	chown -R mysql:mysql "$DATADIR"
 
 	# recover passwords from secrets

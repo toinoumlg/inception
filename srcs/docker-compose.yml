@@ -3,8 +3,8 @@ services:
     container_name: mariadb
     build: requirements/mariadb/
     secrets:
-      - db_root_password
-      - db_password
+      - db_user_pwd
+      - db_root_pwd
     volumes:
       - mariadb-data:/var/lib/mariadb
     restart: unless-stopped
@@ -25,9 +25,9 @@ services:
     container_name: wordpress
     build: requirements/wordpress/
     secrets:
-      - db_password
-      - wp_admin
-      - wp_login
+      - db_user_pwd
+      - wp_admin_pwd
+      - wp_login_pwd
     volumes:
       - wordpress-data:/var/www/wordpress
     networks: 
@@ -36,11 +36,12 @@ services:
       DB_HOST: mariadb
       DB_NAME: ${MYSQL_NAME}
       DB_PORT: ${MYSQL_PORT}
-      ADMIN_NAME: ${WP_ADMIN}
+      ADMIN_NAME: ${WP_ADMIN_NAME}
       ADMIN_MAIL: ${WP_ADMIN_MAIL}
       LOGIN: ${LOGIN}
       LOGIN_MAIL: ${WP_USER_MAIL}
       DOMAIN_NAME: ${DOMAIN_NAME}
+      WP_PORT: ${WP_PORT}
     depends_on:
       mariadb:
         condition: service_healthy
@@ -70,16 +71,22 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  ft_irc:
+    container_name: ft_irc
+    build: requirements/ft_irc
+    ports: 
+      - 4432:4432
+
 
 secrets:
-  db_password:
-    file: ${DB_PWD}
-  db_root_password:
+  db_user_pwd:
+    file: ${DB_USER_PWD}
+  db_root_pwd:
     file: ${DB_ROOT_PWD}
-  wp_admin:
-    file: ${WP_ADMIN}
-  wp_login:
-    file: ${WP_LOGIN}
+  wp_admin_pwd:
+    file: ${WP_ADMIN_PWD}
+  wp_login_pwd:
+    file: ${WP_LOGIN_PWD}
 
 volumes:
   mariadb-data:

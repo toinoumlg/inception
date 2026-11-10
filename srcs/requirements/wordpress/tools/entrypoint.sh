@@ -1,9 +1,12 @@
 #!/bin/sh
+set -eou pipefail
 
 if [ ! -f wp-config.php ]; then
-	DB_PWD_FILE=/run/secrets/db_password
-	ADMIN_PWD_FILE=/run/secrets/wp_admin
-	LOGIN_PWD_FILE=/run/secrets/wp_login
+	DB_PWD_FILE=/run/secrets/db_user_pwd
+	ADMIN_PWD_FILE=/run/secrets/wp_admin_pwd
+	LOGIN_PWD_FILE=/run/secrets/wp_login_pwd
+
+	sed -i "s|WP_PORT|$WP_PORT|g" $CONF
 
 	if [ ! -f $DB_PWD_FILE ] ||
 		[ ! -f $ADMIN_PWD_FILE ] ||
@@ -22,7 +25,7 @@ if [ ! -f wp-config.php ]; then
 		--dbpass=$DB_PWD \
 		--dbhost=$DB_HOST:$DB_PORT
 
-	wp core install --url=$DOMAIN_NAME \
+	wp core install --url="https://$DOMAIN_NAME" \
 		--title=inception \
 		--admin_user=$ADMIN_NAME \
 		--admin_password=$ADMIN_PWD \

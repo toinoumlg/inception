@@ -1,11 +1,11 @@
 FROM alpine:3.24
 
 RUN apk update && apk add \
-	php \
-	php-phar \
-	php-fpm \
-	php-mysqli \
-	php-mbstring \
+	php85 \
+	php85-phar \
+	php85-fpm \
+	php85-mysqli \
+	php85-mbstring \
 	wget
 
 RUN mkdir -p /var/www && adduser -D -g www www
@@ -15,10 +15,12 @@ RUN wget https://wordpress.org/wordpress-7.0.tar.gz && \
 	rm wordpress-7.0.tar.gz && \
 	chown -R www:www /var/www/
 
-RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-	chmod +x wp-cli.phar && mv wp-cli.phar /usr/bin/wp
+RUN wget https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar && \
+	chmod +x wp-cli-2.12.0.phar && mv wp-cli-2.12.0.phar /usr/bin/wp
 
 COPY conf/www.conf /etc/php85/php-fpm.d/www.conf
+
+ENV CONF=/etc/php85/php-fpm.d/www.conf
 
 COPY --chmod=+x tools/entrypoint.sh /entrypoint.sh
 
