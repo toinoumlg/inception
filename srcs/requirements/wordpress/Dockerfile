@@ -18,12 +18,15 @@ RUN wget https://wordpress.org/wordpress-7.0.tar.gz && \
 RUN wget https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar && \
 	chmod +x wp-cli-2.12.0.phar && mv wp-cli-2.12.0.phar /usr/bin/wp
 
-COPY conf/www.conf /etc/php85/php-fpm.d/www.conf
+COPY conf/www.conf /etc/php85/php-fpm.d/www.conf.template
 
 ENV CONF=/etc/php85/php-fpm.d/www.conf
 
 COPY --chmod=+x tools/entrypoint.sh /entrypoint.sh
 
 WORKDIR /var/www/wordpress
+
+HEALTHCHECK --interval=10s --start-period=5s --timeout=3s \
+	CMD ["pgrep", "-x", "php-fpm85"]
 
 ENTRYPOINT ["/entrypoint.sh"]

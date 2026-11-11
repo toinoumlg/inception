@@ -1,6 +1,7 @@
 services:
   mariadb:
     container_name: mariadb
+    image: mariadb
     build: requirements/mariadb/
     secrets:
       - db_user_pwd
@@ -8,14 +9,8 @@ services:
     volumes:
       - mariadb-data:/var/lib/mariadb
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "127.0.0.1"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 2s
     networks: 
-      - inception
+      - shared
     environment:
       PORT: ${MYSQL_PORT}
       DB_NAME: ${MYSQL_NAME}
@@ -23,6 +18,7 @@ services:
 
   wordpress:
     container_name: wordpress
+    image: wordpress
     build: requirements/wordpress/
     secrets:
       - db_user_pwd
@@ -31,7 +27,7 @@ services:
     volumes:
       - wordpress-data:/var/www/wordpress
     networks: 
-      - inception
+      - shared
     environment:
       DB_HOST: mariadb
       DB_NAME: ${MYSQL_NAME}
@@ -45,21 +41,16 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "pgrep", "-x", "php-fpm85"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 2s
     restart: unless-stopped
 
   nginx:
     container_name: nginx
+    image: nginx
     build: requirements/nginx/
     volumes:
-      - wordpress-data:/var/www/wordpress
+      - wordpress-data:/var/www/wordpress:ro
     networks: 
-      - inception
+      - shared
     environment:
       DOMAIN_NAME: ${DOMAIN_NAME}
       NGINX_PORT: ${NGINX_PORT}
@@ -71,12 +62,17 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  ft_irc:
-    container_name: ft_irc
-    build: requirements/ft_irc
-    ports: 
-      - 4432:4432
-
+  # ft_irc:
+  #   container_name: ft_irc
+  #   build: requirements/ft_irc
+  #   networks: 
+  #     - shared
+  #   healthcheck:
+  #     test: ["CMD", "nc", "-z", "127.0.0.1:4432"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+  #     start_period: 2s
 
 secrets:
   db_user_pwd:
@@ -94,14 +90,14 @@ volumes:
     driver_opts: 
       type: none
       o: bind
-      device: /home/amalangu/data/mariadb
+      device: ~/data/mariadb
   wordpress-data:
     driver: local
     driver_opts: 
       type: none
       o: bind
-      device: /home/amalangu/data/wordpress
+      device: ~/data/wordpress
 
 networks:
-  inception:
+  shared:
     driver: bridge

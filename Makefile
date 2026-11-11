@@ -1,11 +1,11 @@
 SOURCE=srcs
 
-UP:= docker compose up -d
-BUILD:= docker compose build
-DOWN:= docker compose down
+UP = docker compose up -d
+BUILD = docker compose build
+DOWN = docker compose down
 
 up:
-	mkdir -p /home/amalangu/data/wordpress && mkdir -p /home/amalangu/data/mariadb
+	mkdir -p ~/data/wordpress && mkdir -p ~/data/mariadb
 	cd $(SOURCE) && $(UP)
 
 down:
@@ -16,7 +16,9 @@ build:
 	
 clear:
 	cd $(SOURCE) && $(DOWN) -v
-	sudo rm -rf /home/amalangu/data
+
+fclear: clear
+	rm -rf ~/data
 
 re: clear build up
 
