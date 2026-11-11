@@ -25,14 +25,16 @@ if [ ! -f wp-config.php ]; then
 		--dbpass=$DB_PWD \
 		--dbhost=$DB_HOST:$DB_PORT
 
-	wp core install --url="https://$DOMAIN_NAME" \
+	wp core install --allow-root \
+		--url="https://$DOMAIN_NAME" \
 		--title=inception \
 		--admin_user=$ADMIN_NAME \
 		--admin_password=$ADMIN_PWD \
 		--admin_email=$ADMIN_MAIL \
 		--skip-email
 
-	wp user create $LOGIN \
+	wp user create --allow-root \
+		$LOGIN \
 		$LOGIN_MAIL \
 		--user_pass=$LOGIN_PWD \
 		--role=editor
