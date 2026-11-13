@@ -1,4 +1,4 @@
-FROM alpine:3.24
+FROM alpine:3.23
 
 RUN apk update && apk add \
 	php85 \
@@ -6,7 +6,10 @@ RUN apk update && apk add \
 	php85-fpm \
 	php85-mysqli \
 	php85-mbstring \
+	php85-gd \
 	wget
+
+RUN ln -s /usr/bin/php85 /usr/bin/php
 
 RUN mkdir -p /var/www && adduser -D -g www www
 

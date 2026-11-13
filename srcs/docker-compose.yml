@@ -1,6 +1,8 @@
 services:
   mariadb:
+    image: mariadb:inception
     container_name: mariadb
+    pull_policy: build
     build: requirements/mariadb/
     secrets:
       - db_user_pwd
@@ -16,7 +18,9 @@ services:
       LOGIN: ${LOGIN}
 
   wordpress:
+    image: wordpress:inception
     container_name: wordpress
+    pull_policy: build
     build: requirements/wordpress/
     secrets:
       - db_user_pwd
@@ -42,7 +46,9 @@ services:
     restart: unless-stopped
 
   nginx:
+    image: nginx:inception
     container_name: nginx
+    pull_policy: build
     build: requirements/nginx/
     volumes:
       - wordpress-data:/var/www/wordpress:ro
@@ -58,18 +64,6 @@ services:
       wordpress:
         condition: service_healthy
     restart: unless-stopped
-
-  # ft_irc:
-  #   container_name: ft_irc
-  #   build: requirements/ft_irc
-  #   networks: 
-  #     - shared
-  #   healthcheck:
-  #     test: ["CMD", "nc", "-z", "127.0.0.1:4432"]
-  #     interval: 10s
-  #     timeout: 3s
-  #     retries: 3
-  #     start_period: 2s
 
 secrets:
   db_user_pwd:
