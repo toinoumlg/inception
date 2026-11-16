@@ -41,7 +41,9 @@ different way to create a container:
 
 ## Mariadb
 
-Mariadb is a relational database, that store data using rows and columns and have relation between them. Rows are defined with unique key, columns are mainly fields for what's behind that key.
+Mariadb is an open-source relational database build around SQL (structured query language), it stores data using rows and columns and have relation between them. Rows are defined with unique key, columns are mainly fields for what's behind that key.
+
+[cheat-sheet sql](https://sql.sh/)
 
 <div align="center">   
 
@@ -52,13 +54,14 @@ Mariadb is a relational database, that store data using rows and columns and hav
 
 It runs as its own service inside [mariadb](/srcs/requirements/mariadb/)
 
-## Wordpress
+## Wordpress & PHP-fpm
 
 [Wordpress](https://en.wordpress.org/) is a well known open-source content management system (CMS) based on PHP and MySQL. For CMS website, wordpress is 60% of those. Wordpress can be used for various thing, mainly blogs and shop. It offers a way to edit and pages using blocks that can be more convinient for non developper user.
 
+[PHP-fpm](https://www.php.net/manual/fr/install.fpm.php) is the actual program running our wordpress and serving to nginx reverse proxy. FPM stands for FastCGI (fast common gateway interface) Process Manager, it's an improved version of the embed FastCGI in php (better process handling dived in pools, configurable logs message, faster uploads). 
+
 Also run as its service inside [wordpress](/srcs/requirements/wordpress/)
  
-
 
 # Intruction
 ## Fresh debian install
@@ -107,13 +110,13 @@ sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin dock
 sudo usermod -aG docker $USER && sudo reboot
 ```
 
-
-
 # Links
 
 - [Dockerfile](https://docs.docker.com/reference/dockerfile "Docker docs")
 - [docker-arg-env-var](https://vsupalov.com/docker-arg-env-variable-guide/)
 - [wordpress](https://wiki.alpinelinux.org/wiki/WordPress "Wiki Alpine Wordpress")
+- [FastCGI](https://www.ibm.com/docs/en/ibm-http-server/9.0.5?topic=applications-learn-about-fastcgi)
+- [php-fpm](https://www.php.net/manual/en/install.fpm.php)
 - [mariaDB](https://wiki.alpinelinux.org/wiki/MariaDB "Wiki Alpine MariaDB") and [mariaDb-install](https://mariadb.com/docs/server/clients-and-utilities/deployment-tools/mariadb-install-db )
 - [Nginx](https://wiki.alpinelinux.org/wiki/Nginx "Wiki Alpine Nginx")
 - [KVM/QEMU](https://www.youtube.com/watch?v=N_0SIOceugs "Youtube FR")
